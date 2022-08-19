@@ -28,16 +28,19 @@ const App = () => {
     const newPerson = {
       name: newName,
       number: newNumber,
-      id: persons.length + 1,
+      // id: persons.length + 1,
     };
-    nameAlreadyAdded
-      ? window.alert(`${newName} is already added to phonebook`)
-      : setPersons(persons.concat(newPerson));
 
-    setNewName("");
-    setNewNumber("");
-    setFilterStatus(false);
-    setFilterValue("");
+    axios.post("http://localhost:3001/persons", newPerson).then((res) => {
+      nameAlreadyAdded
+        ? window.alert(`${newName} is already added to phonebook`)
+        : setPersons(persons.concat(res.data));
+
+      setNewName("");
+      setNewNumber("");
+      setFilterStatus(false);
+      setFilterValue("");
+    });
   };
   const handleNameChange = (event) => {
     // console.log(event.target.value);
