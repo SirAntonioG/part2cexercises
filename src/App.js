@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
 import personService from "./services/persons";
 import Persons from "./Components/Persons";
 import PersonForm from "./Components/PersonForm";
@@ -56,6 +55,14 @@ const App = () => {
     event.target.value === "" ? setFilterStatus(false) : setFilterStatus(true);
   };
 
+  const deletePersonClick = (id) => {
+    const personToDelete = persons.find((person) => person.id === id);
+    window.confirm(`Are you sure you want to delete ${personToDelete.name}?`);
+    personService.update(id, personToDelete).then((returnedPerson) => {
+      setPersons(persons.filter((person) => person.id !== personToDelete.id));
+    });
+  };
+
   return (
     <div>
       <h2>Phonebook</h2>
@@ -69,7 +76,7 @@ const App = () => {
         numberOnChange={handleNumberChange}
       />
       <h2>Numbers</h2>
-      <Persons persons={personsToShow} />
+      <Persons persons={personsToShow} deletePerson={deletePersonClick} />
     </div>
   );
 };

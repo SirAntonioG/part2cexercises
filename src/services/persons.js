@@ -12,6 +12,11 @@ const create = (newPerson) => {
   return request.then((res) => res.data);
 };
 
-const personService = { getAll, create };
+const update = (id, newPerson) => {
+  const request = axios.put(`${baseUrl}/${id}`, newPerson);
+  return request.then((res) => res.data);
+};
+
+const personService = { getAll, create, update };
 
 export default personService;
