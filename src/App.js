@@ -26,26 +26,46 @@ const App = () => {
     const newPerson = {
       name: newName,
       number: newNumber,
-      // id: persons.length + 1,
     };
+    if (nameAlreadyAdded) {
+      const confirm = window.confirm(
+        `${newName} is already added to phonebook, replace the old number with the new one?`
+      );
+      if (confirm) {
+        const personToUpdate = persons.find(
+          (person) => person.name === newPerson.name
+        );
+        const changedPerson = { ...personToUpdate, number: newPerson.number };
+        personService
+          .update(personToUpdate.id, changedPerson)
+          .then((returnedPerson) => {
+            setPersons(
+              persons.map((item) =>
+                item.id !== personToUpdate.id ? item : returnedPerson
+              )
+            );
+          });
+      } else {
+        setNewName("");
+        setNewNumber("");
+        setFilterStatus(false);
+        setFilterValue("");
+      }
+    } else {
+      personService.create(newPerson).then((returnedPerson) => {
+        setPersons(persons.concat(returnedPerson));
 
-    personService.create(newPerson).then((returnedPerson) => {
-      nameAlreadyAdded
-        ? window.alert(`${newName} is already added to phonebook`)
-        : setPersons(persons.concat(returnedPerson));
-
-      setNewName("");
-      setNewNumber("");
-      setFilterStatus(false);
-      setFilterValue("");
-    });
+        setNewName("");
+        setNewNumber("");
+        setFilterStatus(false);
+        setFilterValue("");
+      });
+    }
   };
   const handleNameChange = (event) => {
-    // console.log(event.target.value);
     setNewName(event.target.value);
   };
   const handleNumberChange = (event) => {
-    // console.log(event.target.value);
     setNewNumber(event.target.value);
   };
   const handleFilterChange = (event) => {
@@ -57,10 +77,14 @@ const App = () => {
 
   const deletePersonClick = (id) => {
     const personToDelete = persons.find((person) => person.id === id);
-    window.confirm(`Are you sure you want to delete ${personToDelete.name}?`);
-    personService.update(id, personToDelete).then((returnedPerson) => {
-      setPersons(persons.filter((person) => person.id !== personToDelete.id));
-    });
+    const confirm = window.confirm(
+      `Are you sure you want to delete ${personToDelete.name}?`
+    );
+    if (confirm) {
+      personService.erase(id).then((res) => {
+        setPersons(persons.filter((item) => item.id !== personToDelete.id));
+      });
+    }
   };
 
   return (
